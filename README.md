@@ -1,4 +1,4 @@
-# Hello, Node
+# SuperCasamentos
 É um repositório com fins educativos. Node.js + Docker-Compose.
 
 # Preparar o ambiente

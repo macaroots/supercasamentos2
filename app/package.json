@@ -1,18 +1,17 @@
 {
-  "name": "hello_node",
+  "name": "SuperCasamentos",
   "version": "1.0.0",
-  "description": "Hello Node.js",
+  "description": "SuperCasamentos em Node",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon app.js"
   },
   "keywords": [
-    "Hello"
+    "SuperCasamentos"
   ],
   "author": "Renato Lenz Costalima",
   "license": "Apache-2.0",
   "dependencies": {
-  },
-  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }
