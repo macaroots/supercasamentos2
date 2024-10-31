@@ -1,0 +1,24 @@
+<form action="/idade" method="post">
+    <label>
+        <span>Nome</span>
+        <input name="nome" />
+    </label>
+    <label>
+        <span>Ano</span>
+        <input name="ano" type="number" />
+    </label>
+<%
+for (let i = 0; i < 10; i++) {
+    if (i == 5) {
+        continue;
+    }
+_%>
+    <label>
+        <span>Nome <%= i %></span>
+        <input name="nome<%= i %>" />
+    </label>
+<%
+}
+_%>
+    <button>Enviar</button>
+</form>

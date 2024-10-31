@@ -12,6 +12,8 @@
   "author": "Renato Lenz Costalima",
   "license": "Apache-2.0",
   "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
     "nodemon": "^3.1.7"
   }
 }
