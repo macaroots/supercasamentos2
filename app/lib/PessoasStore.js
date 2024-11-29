@@ -22,6 +22,12 @@ class PessoasStore {
     ver(id) {
         return this.pessoas.filter(p => p.id == id)[0];
     }
+    
+    procurarPorNome(nome) {
+        let p = this.pessoas.filter(p => p.nome == nome)[0];
+        console.log({p, ps: this.pessoas})
+        return p;
+    }
 }
 
 module.exports = PessoasStore;
