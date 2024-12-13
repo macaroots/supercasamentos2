@@ -3,10 +3,11 @@ const cookieParser = require('cookie-parser')
 
 const jwt = require('jsonwebtoken');
 
+const mysql = require('mysql2/promise');
 
 const IndexController = require('./controllers/IndexController');
 const PessoaController = require('./controllers/PessoaController');
-const PessoasStore = require('./lib/PessoasStore');
+const PessoasMysqlStore = require('./lib/PessoasMysqlStore');
 
 const app = express();
 app.use(express.static('public'))
@@ -14,7 +15,16 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-const pessoasStore = new PessoasStore();
+const conectar = () => {
+    return mysql.createConnection({
+        host: 'db',
+        user: process.env.MARIADB_USER,
+        password: process.env.MARIADB_PASSWORD,
+        database: process.env.MARIADB_DATABASE,
+    });
+}
+
+const pessoasStore = new PessoasMysqlStore(conectar);
 
 const indexController = new IndexController();
 const pessoaController = new PessoaController(pessoasStore);
@@ -62,6 +72,21 @@ app.delete('/pessoas/:id', (req, res) => {
 
 app.post('/login', (req, res) => {
     pessoaController.login(req, res);
+});
+
+app.get('/teste_bd', async (req, res) => {
+    // A simple SELECT query
+    try {
+        const [results, fields] = await connection.query(
+            'SELECT * FROM `pessoas` WHERE `ano` > 45'
+        );
+
+        res.json(results); // results contains rows returned by server
+        console.log(fields); // fields contains extra meta data about results, if available
+    } catch (err) {
+        console.log(err);
+    }
+
 });
 
 app.get('*', function naoEncontrado(request, response) {

@@ -19,41 +19,41 @@ class PessoaController {
         response.render('idade', {pessoa: pessoa, idade});
     }
 
-    listar(request, response) {
-        let pessoas = this.pessoasStore.listar();
+    async listar(request, response) {
+        let pessoas = await this.pessoasStore.listar();
         response.json(pessoas);
     }
 
-    inserir(request, response) {
+    async inserir(request, response) {
         let pessoa = new Pessoa(request.body.nome, parseInt(request.body.ano));
         pessoa.senha = request.body.senha;
-        this.pessoasStore.inserir(pessoa);
+        await this.pessoasStore.inserir(pessoa);
         response.status(201).json(pessoa);
     }
 
-    alterar(request, response) {
+    async alterar(request, response) {
         let id = request.params.id
         let pessoa = new Pessoa(request.body.nome, parseInt(request.body.ano));
-        this.pessoasStore.alterar(id, pessoa);
+        await this.pessoasStore.alterar(id, pessoa);
         response.send();
     }
 
-    apagar(request, response) {
+    async apagar(request, response) {
         let id = request.params.id
-        this.pessoasStore.apagar(id);
+        await this.pessoasStore.apagar(id);
         response.send();
     }
 
-    ver(request, response) {
+    async ver(request, response) {
         let id = request.params.id
-        let pessoa = this.pessoasStore.ver(id);
+        let pessoa = await this.pessoasStore.ver(id);
         response.json(pessoa);
     }
 
-    login(request, response) {
+    async login(request, response) {
         let nome = request.body.nome;
         let senha = request.body.senha;
-        let pessoa = this.pessoasStore.procurarPorNome(nome);
+        let pessoa = await this.pessoasStore.procurarPorNome(nome);
         console.log({pessoa});
         if (pessoa) {
             if (pessoa.compararSenha(senha)) {
