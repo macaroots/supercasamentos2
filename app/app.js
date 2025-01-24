@@ -47,6 +47,10 @@ app.get('/', (req, res) => {
     indexController.index(req, res);
 });
 
+app.get('/front', (req, res) => {
+    res.render('front');
+})
+
 app.get('/idade', (req, res) => {
     res.send(req.query);
 });

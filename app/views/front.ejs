@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .maior {
+            color: green;
+        }
+        .menor {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <%- include('cabecalho') %>
+    <form onsubmit="event.preventDefault(); processaForm(this);">
+        <label>
+            <span>Nome</span>
+            <input name="nome">
+        </label>
+        <label>
+            <span>Ano</span>
+            <input name="ano" type="number">
+        </label>
+        <button>Adicionar</button>
+    </form>
+    <section id="pessoas" x="100">
+        <article class="maior">
+            <h1>Nome 1</h1>
+            <span>Ano: 23</span>
+            <span>Idade: 23</span>
+            <button onclick="alterar(this);">Alterar</button>
+            <button>Apagar</button>
+        </article>
+        <article class="maior">
+            <h1>Nome</h1>
+            <span>Ano: 23</span>
+            <span>Idade: 23</span>
+        </article>
+        <article class="menor">
+            <h1>Nome</h1>
+            <span>Ano: 123</span>
+            <span>Idade: 13</span>
+        </article>
+    </section>
+    <script>
+        async function processaForm(form) {
+            let nome = form.nome.value;
+            let ano = parseInt(form.ano.value);
+
+            await inserir({nome, ano});
+
+            mostrarLista();
+        }
+
+        async function mostrarLista() {
+            let form = document.querySelector('form');
+            let divPessoas = document.querySelector('#pessoas');
+            divPessoas.innerHTML = '';
+
+            let pessoas = await listar();
+
+            for (let pessoa of pessoas) {
+                let nome = pessoa.nome;
+                let ano = pessoa.ano;
+                let idade = 2025 - ano;
+                let article = document.createElement('article');
+                let h1 = document.createElement('h1');
+                let spanAno = document.createElement('span');
+                let spanIdade = document.createElement('span');
+                let buttonAlterar = document.createElement('button');
+                h1.innerText = nome;
+                spanAno.innerText = 'Ano: ' + ano;
+                spanIdade.innerText = 'Idade: ' + idade;
+                buttonAlterar.innerText = 'Alterar';
+                article.appendChild(h1);
+                article.appendChild(spanAno);
+                article.appendChild(spanIdade);
+                article.appendChild(buttonAlterar);
+
+                buttonAlterar.onclick = () => {
+                    alterar(pessoa.id);
+                }
+                divPessoas.appendChild(article);
+
+                if (idade >= 18) {
+                    article.classList.add('maior');
+                    form.classList.add('maior');
+                    form.classList.remove('menor');
+                }
+                else {
+                    article.classList.add('menor');
+                    form.classList.add('menor');
+                    form.classList.remove('maior');
+                }
+            }
+        }
+
+        async function alterar(id) {
+            let pessoa = await procurarPorId(id);
+            
+            let form = document.querySelector('form');
+            form.nome.value = pessoa.nome;
+            form.ano.value = pessoa.ano;
+        }
+
+        let pessoas = [];
+        async function inserir(pessoa) {
+            pessoas.push(pessoa);
+            pessoa.id = pessoas.length;
+        }
+
+        async function listar() {
+            return pessoas;
+        }
+
+        async function procurarPorId(id) {
+            let pessoas = await listar();
+            try {
+                return pessoas.filter(p => p.id == id)[0];
+            } catch {
+                return null;
+            }
+        }
+        
+        mostrarLista();
+    </script>
+</body>
+</html>
