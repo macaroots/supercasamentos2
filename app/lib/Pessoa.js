@@ -16,6 +16,10 @@ class Pessoa {
     }
 
     set senha(senha) {
+        console.log({senha});
+        if (!senha) {
+            throw new Error('Senha não pode ser vazia!');
+        }
         this._senha = bcrypt.hashSync(senha, Pessoa.SALT_ROUNDS);
     }
 

@@ -25,10 +25,14 @@ class PessoaController {
     }
 
     async inserir(request, response) {
-        let pessoa = new Pessoa(request.body.nome, parseInt(request.body.ano));
-        pessoa.senha = request.body.senha;
-        await this.pessoasStore.inserir(pessoa);
-        response.status(201).json(pessoa);
+        try {
+            let pessoa = new Pessoa(request.body.nome, parseInt(request.body.ano));
+            pessoa.senha = request.body.senha;
+            await this.pessoasStore.inserir(pessoa);
+            response.status(201).json(pessoa);
+        } catch (e) {
+            response.status(400).send('Erro: ' + e.message);
+        }
     }
 
     async alterar(request, response) {

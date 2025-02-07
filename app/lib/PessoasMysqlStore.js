@@ -42,8 +42,19 @@ class PessoasMysqlStore {
     apagar(id) {
     }
 
-    ver(id) {
-        return ;
+    async ver(id) {
+        try {
+            let connection = await this.conectar();
+            const [results, fields] = await connection.query(
+                'SELECT * FROM `pessoas` WHERE id=?',
+                [id]
+            );
+    
+            return results[0];
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
     }
     
     procurarPorNome(nome) {

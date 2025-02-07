@@ -24,6 +24,10 @@
             <span>Ano</span>
             <input name="ano" type="number">
         </label>
+        <label>
+            <span>Senha</span>
+            <input name="senha" type="password">
+        </label>
         <button>Adicionar</button>
     </form>
     <section id="pessoas" x="100">
@@ -49,10 +53,15 @@
         async function processaForm(form) {
             let nome = form.nome.value;
             let ano = parseInt(form.ano.value);
+            let senha = form.senha.value;
 
-            await inserir({nome, ano});
-
-            mostrarLista();
+            try {
+                await pessoasStore.inserir({nome, ano, senha});
+    
+                mostrarLista();
+            } catch(erro) {
+                alert(erro);
+            }
         }
 
         async function mostrarLista() {
@@ -60,7 +69,7 @@
             let divPessoas = document.querySelector('#pessoas');
             divPessoas.innerHTML = '';
 
-            let pessoas = await listar();
+            let pessoas = await pessoasStore.listar();
 
             for (let pessoa of pessoas) {
                 let nome = pessoa.nome;
@@ -99,31 +108,68 @@
         }
 
         async function alterar(id) {
-            let pessoa = await procurarPorId(id);
+            let pessoa = await pessoasStore.procurarPorId(id);
             
             let form = document.querySelector('form');
             form.nome.value = pessoa.nome;
             form.ano.value = pessoa.ano;
         }
 
-        let pessoas = [];
-        async function inserir(pessoa) {
-            pessoas.push(pessoa);
-            pessoa.id = pessoas.length;
-        }
-
-        async function listar() {
-            return pessoas;
-        }
-
-        async function procurarPorId(id) {
-            let pessoas = await listar();
-            try {
-                return pessoas.filter(p => p.id == id)[0];
-            } catch {
-                return null;
+        class PessoasStoreAbstrato {
+            async procurarPorId(id) {
+                let pessoas = await this.listar();
+                try {
+                    return pessoas.filter(p => p.id == id)[0];
+                } catch {
+                    return null;
+                }
             }
         }
+        class PessoasStoreArray extends PessoasStoreAbstrato {
+            pessoas = [];
+            async inserir(pessoa) {
+                this.pessoas.push(pessoa);
+                pessoa.id = this.pessoas.length;
+            }
+
+            async listar() {
+                return this.pessoas;
+            }
+
+        }
+        class PessoasStoreFetch extends PessoasStoreAbstrato {
+            constructor(url) {
+                super();
+                this.url = url;
+            }
+            async inserir(pessoa) {
+                let response = await fetch(this.url, {
+                    method: 'post', 
+                    body: new URLSearchParams(pessoa), 
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                });
+                if (response.status == 201) {
+                    let novaPessoa = await response.json();
+                    pessoa.id = novaPessoa.id;
+                } else {
+                    let erro = await response.text();
+                    throw new Error(erro)
+                }
+            }
+            async listar() {
+                let response = await fetch(this.url);
+                return await response.json();
+            }
+            async procurarPorId(id) {
+                let response = await fetch(this.url + '/' + id);
+                return await response.json();
+            }
+        }
+
+        //let pessoasStore = new PessoasStoreArray();
+        let pessoasStore = new PessoasStoreFetch('http://localhost:82/pessoas');
         
         mostrarLista();
     </script>
