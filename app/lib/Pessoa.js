@@ -1,14 +1,18 @@
 const bcrypt = require('bcrypt');
 
 class Pessoa {
+    id;
     nome;
     ano;
+    _senha;
     static SALT_ROUNDS = 10;
     saltRounds
 
-    constructor(nome, ano) {
+    constructor(nome, ano, senha, id) {
         this.nome = nome;
         this.ano = ano;
+        this._senha = senha;
+        this.id = id;
     }
 
     getIdade() {

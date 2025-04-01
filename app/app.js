@@ -8,9 +8,11 @@ const mysql = require('mysql2/promise');
 const IndexController = require('./controllers/IndexController');
 const PessoaController = require('./controllers/PessoaController');
 const PessoasMysqlStore = require('./lib/PessoasMysqlStore');
+const ServicosController = require('./controllers/ServicosController');
+const ServicosMysqlStore = require('./lib/ServicosMysqlStore');
 
 const app = express();
-app.use(express.static('public'))
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -25,31 +27,37 @@ const conectar = () => {
 }
 
 const pessoasStore = new PessoasMysqlStore(conectar);
+const servicosStore = new ServicosMysqlStore(conectar);
 
-const indexController = new IndexController();
+const indexController = new IndexController(servicosStore);
 const pessoaController = new PessoaController(pessoasStore);
+const servicosController = new ServicosController(servicosStore);
 
 let segredo = 'process.env.SEGREDO';
 let autenticar = (req, res, next) => {
     let token = req.cookies.token;
     console.log('autenticando', token);
-    let decodificado = jwt.verify(token, segredo);
-    console.log(decodificado);
-    if (decodificado.id) {
-        next();
+    if (token) {
+        let decodificado = jwt.verify(token, segredo);
+        console.log(decodificado);
+        if (decodificado.id) {
+            next();
+            return;
+        }
     }
-    else {
-        res.status(401).send('Acesso negado');
-    }
+    res.status(401).send('Acesso negado');
 }
 
 app.get('/', (req, res) => {
     indexController.index(req, res);
 });
 
-app.get('/front', (req, res) => {
-    res.render('front');
-})
+app.get('/admin/pessoas', (req, res) => {
+    res.render('admin/pessoas');
+});
+app.get('/admin/servicos', (req, res) => {
+    res.render('admin/servicos');
+});
 
 app.get('/idade', (req, res) => {
     res.send(req.query);
@@ -74,6 +82,27 @@ app.delete('/pessoas/:id', (req, res) => {
     pessoaController.apagar(req, res);
 })
 
+
+
+app.get('/servicos', (req, res) => {
+    servicosController.listar(req, res);
+})
+app.get('/servicos/:id', autenticar, (req, res) => {
+    servicosController.ver(req, res);
+})
+app.post('/servicos', (req, res) => {
+    servicosController.inserir(req, res);
+})
+app.put('/servicos/:id', (req, res) => {
+    servicosController.alterar(req, res);
+})
+app.delete('/servicos/:id', (req, res) => {
+    servicosController.apagar(req, res);
+})
+
+app.get('/login', (req, res) => {
+    pessoaController.loginForm(req, res);
+});
 app.post('/login', (req, res) => {
     pessoaController.login(req, res);
 });

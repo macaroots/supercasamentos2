@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-    <%- include('cabecalho') %>
+    <%- include('../cabecalho') %>
     <form onsubmit="event.preventDefault(); processaForm(this);">
         <label>
             <span>Nome</span>
@@ -28,7 +28,9 @@
             <span>Senha</span>
             <input name="senha" type="password">
         </label>
+        <input type="hidden" name="id" value="-1">
         <button>Adicionar</button>
+        <button onclick="limpar()">Limpar</button>
     </form>
     <section id="pessoas" x="100">
         <article class="maior">
@@ -54,9 +56,15 @@
             let nome = form.nome.value;
             let ano = parseInt(form.ano.value);
             let senha = form.senha.value;
+            let id = form.id.value;
 
             try {
-                await pessoasStore.inserir({nome, ano, senha});
+                if (id == '-1') {
+                    await pessoasStore.inserir({nome, ano, senha});
+                }
+                else {
+                    await pessoasStore.alterar(id, {nome, ano});
+                }
     
                 mostrarLista();
             } catch(erro) {
@@ -67,9 +75,9 @@
         async function mostrarLista() {
             let form = document.querySelector('form');
             let divPessoas = document.querySelector('#pessoas');
+            let pessoas = await pessoasStore.listar();
             divPessoas.innerHTML = '';
 
-            let pessoas = await pessoasStore.listar();
 
             for (let pessoa of pessoas) {
                 let nome = pessoa.nome;
@@ -80,17 +88,23 @@
                 let spanAno = document.createElement('span');
                 let spanIdade = document.createElement('span');
                 let buttonAlterar = document.createElement('button');
+                let buttonApagar = document.createElement('button');
                 h1.innerText = nome;
                 spanAno.innerText = 'Ano: ' + ano;
                 spanIdade.innerText = 'Idade: ' + idade;
                 buttonAlterar.innerText = 'Alterar';
+                buttonApagar.innerText = 'Apagar';
                 article.appendChild(h1);
                 article.appendChild(spanAno);
                 article.appendChild(spanIdade);
                 article.appendChild(buttonAlterar);
+                article.appendChild(buttonApagar);
 
                 buttonAlterar.onclick = () => {
                     alterar(pessoa.id);
+                }
+                buttonApagar.onclick = () => {
+                    apagar(pessoa.id);
                 }
                 divPessoas.appendChild(article);
 
@@ -113,6 +127,16 @@
             let form = document.querySelector('form');
             form.nome.value = pessoa.nome;
             form.ano.value = pessoa.ano;
+            form.id.value = pessoa.id;
+        }
+        async function apagar(id) {
+            let pessoa = await pessoasStore.apagar(id);
+            mostrarLista();
+        }
+
+        function limpar() {
+            document.querySelector('input[name=id]').value = -1;
+            document.querySelector('form').reset();
         }
 
         class PessoasStoreAbstrato {
@@ -158,6 +182,21 @@
                     throw new Error(erro)
                 }
             }
+            async alterar(id, pessoa) {
+                let response = await fetch(this.url + '/' + id, {
+                    method: 'put', 
+                    body: new URLSearchParams(pessoa), 
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    }
+                });
+                if (response.status == 200) {
+                    let novaPessoa = await response.json();
+                } else {
+                    let erro = await response.text();
+                    throw new Error(erro)
+                }
+            }
             async listar() {
                 let response = await fetch(this.url);
                 return await response.json();
@@ -165,6 +204,11 @@
             async procurarPorId(id) {
                 let response = await fetch(this.url + '/' + id);
                 return await response.json();
+            }
+            async apagar(id) {
+                let response = await fetch(this.url + '/' + id, {
+                    method: 'delete'
+                });
             }
         }
 

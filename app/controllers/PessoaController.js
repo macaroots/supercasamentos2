@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 
 class PessoaController {
 
-    segredo = 'process.env.SEGREDO';
+    segredo = process.env.SEGREDO;
 
     constructor(pessoasStore) {
         this.pessoasStore = pessoasStore;
@@ -12,11 +12,11 @@ class PessoaController {
     idade(request, response) {
         let body = request.body;
 
-        let pessoa = new Pessoa(body.nome, parseInt(body['ano']));
+        let pessoa = new Pessoa(body.nome, parseInt(body.ano));
 
         let idade = pessoa.getIdade();
 
-        response.render('idade', {pessoa: pessoa, idade});
+        response.render('idade', {pessoa, idade});
     }
 
     async listar(request, response) {
@@ -39,7 +39,7 @@ class PessoaController {
         let id = request.params.id
         let pessoa = new Pessoa(request.body.nome, parseInt(request.body.ano));
         await this.pessoasStore.alterar(id, pessoa);
-        response.send();
+        response.send(pessoa);
     }
 
     async apagar(request, response) {
@@ -54,6 +54,10 @@ class PessoaController {
         response.json(pessoa);
     }
 
+    loginForm(request, response) {
+        response.render('login');
+    }
+
     async login(request, response) {
         let nome = request.body.nome;
         let senha = request.body.senha;
@@ -62,10 +66,12 @@ class PessoaController {
         if (pessoa) {
             if (pessoa.compararSenha(senha)) {
                 let token = jwt.sign({...pessoa}, this.segredo);
-                response.cookie('token', token);
+                response.cookie('token', token, {httpOnly: true, maxAge: 86400000});
                 response.json({ok: true});
                 return
             }
+        } else {
+            new Pessoa('', '', 'a').compararSenha('b');
         }
         response.json({ok: false});
     }

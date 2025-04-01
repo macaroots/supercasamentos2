@@ -1,6 +1,6 @@
-const Pessoa = require("./Pessoa");
+const Servico = require("./Servico");
 
-class PessoasMysqlStore {
+class ServicosMysqlStore {
 
     constructor(conectar) {
         this.conectar = conectar;
@@ -10,7 +10,7 @@ class PessoasMysqlStore {
         try {
             let connection = await this.conectar();
             const [results, fields] = await connection.query(
-                'SELECT * FROM `pessoas`'
+                'SELECT * FROM `servicos`'
             );
     
             return results;
@@ -20,32 +20,34 @@ class PessoasMysqlStore {
         }
     }
 
-    async inserir(pessoa) {
+    async inserir(servico) {
         try {
             let connection = await this.conectar();
-            let sql = `INSERT INTO pessoas VALUES (DEFAULT, ?, ?, ?)`;
+            let sql = `INSERT INTO servicos VALUES (DEFAULT, ?, ?, ?, ?, ?)`;
 
             console.log(sql);
             const [results, fields] = await connection.query(sql, [
-                pessoa.nome,
-                pessoa.ano, 
-                pessoa.senha
+                servico.nome,
+                servico.duracao, 
+                servico.preco,
+                servico.descricao,
+                servico.imagem
             ]);
-            pessoa.id = results.insertId;
+            servico.id = results.insertId;
         } catch (err) {
             console.log(err);
             throw err;
         }
     }
     
-    async alterar(id, pessoa) {
+    async alterar(id, servico) {
         try {
             let connection = await this.conectar();
-            let sql = `UPDATE pessoas SET nome=?, ano=? where id=?`;
+            let sql = `UPDATE servicos SET nome=?, ano=? where id=?`;
             console.log(sql);
             const [results, fields] = await connection.query(sql, [
-                pessoa.nome,
-                pessoa.ano, 
+                servico.nome,
+                servico.ano, 
                 id
             ]);
         } catch (err) {
@@ -57,7 +59,7 @@ class PessoasMysqlStore {
     async apagar(id) {
         try {
             let connection = await this.conectar();
-            let sql = `DELETE FROM pessoas where id=?`;
+            let sql = `DELETE FROM servicos where id=?`;
             console.log(sql);
             const [results, fields] = await connection.query(sql, [
                 id
@@ -72,7 +74,7 @@ class PessoasMysqlStore {
         try {
             let connection = await this.conectar();
             const [results, fields] = await connection.query(
-                'SELECT * FROM `pessoas` WHERE id=?',
+                'SELECT * FROM `servicos` WHERE id=?',
                 [id]
             );
     
@@ -87,13 +89,13 @@ class PessoasMysqlStore {
         try {
             let connection = await this.conectar();
             const [results, fields] = await connection.query(
-                'SELECT * FROM `pessoas` WHERE nome=?',
+                'SELECT * FROM `servicos` WHERE nome=?',
                 [nomePesquisa]
             );
     
             if (results[0]) {
                 let {id, nome, ano, senha} = results[0];
-                return new Pessoa(nome, ano, senha, id);
+                return new servico(nome, ano, senha, id);
             }
             else {
                 return null;
@@ -105,4 +107,4 @@ class PessoasMysqlStore {
     }
 }
 
-module.exports = PessoasMysqlStore;
+module.exports = ServicosMysqlStore;

@@ -1,6 +1,12 @@
 class IndexController {
-    index(request, response) {
-        response.render('index');
+
+    constructor(servicosStore) {
+        this.servicosStore = servicosStore;
+    }
+
+    async index(request, response) {
+        let servicos = await this.servicosStore.listar();
+        response.render('index', {servicos});
     }
 }
 
