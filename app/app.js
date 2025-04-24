@@ -55,8 +55,9 @@ app.get('/', (req, res) => {
 app.get('/admin/pessoas', (req, res) => {
     res.render('admin/pessoas');
 });
-app.get('/admin/servicos', (req, res) => {
-    res.render('admin/servicos');
+app.get('/admin/servicos', async (req, res) => {
+    let servicos = await servicosStore.listar();
+    res.render('admin/servicos', {servicos});
 });
 
 app.get('/idade', (req, res) => {

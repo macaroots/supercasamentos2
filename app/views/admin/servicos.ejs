@@ -55,42 +55,24 @@
                 <th>Preço (R$)</th>
                 <th>Ações</th>
             </tr>
+<%
+for (let servico of servicos) {
+_%>
             <tr>
-                <td>1</td>
-                <td>Nome1</td>
-                <td>3</td>
-                <td>5</td>
+                <td><%= servico.id %></td>
+                <td><%= servico.nome %></td>
+                <td><%= servico.duracao %></td>
+                <td><%= servico.preco %></td>
                 <td>
                     <button>editar</button>
                     <button>apagar</button>
-                    <a href="#">editar</a>
-                    <a href="#">apagar</a>
+                    <a href="/editar/<%= servico.id %>">editar</a>
+                    <a href="/apagar/<%= servico.id %>">apagar</a>
                 </td>
             </tr>
-            <tr>
-                <td>2</td>
-                <td>Nome1</td>
-                <td>3</td>
-                <td>6</td>
-                <td>
-                    <button>editar</button>
-                    <button>apagar</button>
-                    <a href="#">editar</a>
-                    <a href="#">apagar</a>
-                </td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>Nome3</td>
-                <td>2</td>
-                <td>5</td>
-                <td>
-                    <button>editar</button>
-                    <button>apagar</button>
-                    <a href="#">editar</a>
-                    <a href="#">apagar</a>
-                </td>
-            </tr>
+<%
+}
+_%>
         </table>
         <nav>
             <a href="/admin/servicos.html?pagina=1">1</a>
