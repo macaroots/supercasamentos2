@@ -12,6 +12,8 @@
             color: red;
         }
     </style>
+    <script src="/js/db.js"></script>
+    <script src="/js/ServicosIndexedDBStore.js"></script>
 </head>
 <body>
     <%- include('../cabecalho') %>
@@ -213,7 +215,9 @@
         }
 
         //let pessoasStore = new PessoasStoreArray();
-        let pessoasStore = new PessoasStoreFetch('http://localhost:82/pessoas');
+        // let pessoasStore = new PessoasStoreFetch('http://localhost:82/pessoas');
+        let pessoasStore = new PessoasIndexedDBStore(conectar);
+
         
         mostrarLista();
     </script>

@@ -1,5 +1,6 @@
 const Pessoa = require('../lib/Pessoa');
 const jwt = require('jsonwebtoken');
+const express = require('express');
 
 class PessoaController {
 
@@ -7,6 +8,30 @@ class PessoaController {
 
     constructor(pessoasStore) {
         this.pessoasStore = pessoasStore;
+    }
+
+    getRouter() {
+        const rotas = express.Router();
+
+
+        rotas.get('/', (req, res) => {
+            pessoaController.listar(req, res);
+        })
+        rotas.get('/:id', (req, res) => {
+            pessoaController.ver(req, res);
+        })
+        rotas.post('/', (req, res) => {
+            pessoaController.inserir(req, res);
+        })
+        rotas.put('/:id', (req, res) => {
+            pessoaController.alterar(req, res);
+        })
+        rotas.delete('/:id', (req, res) => {
+            pessoaController.apagar(req, res);
+        })
+
+
+        return rotas;
     }
 
     idade(request, response) {

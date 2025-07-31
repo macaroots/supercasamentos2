@@ -48,8 +48,30 @@ let autenticar = (req, res, next) => {
     res.status(401).send('Acesso negado');
 }
 
-app.get('/', (req, res) => {
+function compacta(req, res, next) {
+    
+    console.log('cabeçalho')
+    res.locals.info = 'info';
+    next();
+    console.log('rodapé')
+}
+function compacta2(req, res, next) {
+    
+    console.log('cabeçalho2')
+    req.info += 'b';
+    next();
+    console.log('rodapé2')
+}
+app.use(compacta);
+app.get('/', compacta2, compacta, (req, res) => {
     indexController.index(req, res);
+});
+
+app.get('/detalhes/:id', async (req, res) => {
+    let id = req.params.id;
+    let servico = await servicosStore.ver(id);
+    console.log({id, servico})
+    res.render('detalhes', {servico});
 });
 
 app.get('/admin/pessoas', (req, res) => {
@@ -63,27 +85,18 @@ app.get('/admin/servicos', async (req, res) => {
 app.get('/idade', (req, res) => {
     res.send(req.query);
 });
+
 app.post('/idade', (req, res) => {
     pessoaController.idade(req, res);
 });
+app.get('/login', (req, res) => {
+    pessoaController.loginForm(req, res);
+});
+app.post('/login', (req, res) => {
+    pessoaController.login(req, res);
+});
 
-app.get('/pessoas', (req, res) => {
-    pessoaController.listar(req, res);
-})
-app.get('/pessoas/:id', autenticar, (req, res) => {
-    pessoaController.ver(req, res);
-})
-app.post('/pessoas', (req, res) => {
-    pessoaController.inserir(req, res);
-})
-app.put('/pessoas/:id', (req, res) => {
-    pessoaController.alterar(req, res);
-})
-app.delete('/pessoas/:id', (req, res) => {
-    pessoaController.apagar(req, res);
-})
-
-
+app.use('/api/pessoas', autenticar, pessoaController.getRouter());
 
 app.get('/servicos', (req, res) => {
     servicosController.listar(req, res);
