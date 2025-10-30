@@ -1,0 +1,26 @@
+
+    <section id="banner_inicial">
+        <div>O Super Casamentos está aqui pra você! <%= a %><%= info %></div>
+        <img src="/images/banner.png" alt="Super Casamentos">
+    </section>
+    <section>
+        <h2>Tudo sobre Super Casamentos</h2>
+        <p>Donec at tempus ipsum. Curabitur pretium in eros eget elementum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin ultrices massa urna, ut convallis risus lobortis quis. </p>
+        <img src="/images/banner2.png" alt="Noivos ao pôr-do-sol">
+    </section>
+    <section id="servicos">
+        <h2>Nossos serviços</h2>
+    <%
+    for (let servico of servicos) {
+    _%>
+        <article class="servico">
+            <h3><%= servico.nome %></h3>
+            <img src="<%= servico.imagem %>" alt="<%= servico.nome %>">
+            <span><%= servico.duracao %>h</span>
+            <span><%= servico.preco %></span>
+            <a href="/detalhes/<%= servico.id %>">Ver mais</a>
+        </article>
+    <%
+    }
+    _%>
+    </section>

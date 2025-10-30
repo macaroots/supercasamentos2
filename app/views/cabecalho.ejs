@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Super Casamentos</title>
     <link rel="stylesheet" href="/css/estilo.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4.0.15/dist/vue-router.global.js"></script>
 </head>
-<body>
+<body id="app">
     <header>
         <h1>Supercasamentos</h1>
         <nav>
-            <a href="/">Início</a>
+            <router-link to="/">Início</router-link>
             <a href="/admin/servicos">Serviços</a>
+            <router-link to="/admin/servicos">Admin serviços</router-link>
+            <router-link to="/autor">Autor</router-link>
         </nav>
     </header>

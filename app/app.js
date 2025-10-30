@@ -66,6 +66,9 @@ app.use(compacta);
 app.get('/', compacta2, compacta, (req, res) => {
     indexController.index(req, res);
 });
+app.get('/servicos', (req, res) => {
+    indexController.servicos(req, res);
+})
 
 app.get('/detalhes/:id', async (req, res) => {
     let id = req.params.id;
@@ -97,7 +100,8 @@ app.post('/login', (req, res) => {
 });
 
 app.use('/api/pessoas', autenticar, pessoaController.getRouter());
-
+app.use('/api/servicos', servicosController.getRouter());
+/*
 app.get('/servicos', (req, res) => {
     servicosController.listar(req, res);
 })
@@ -112,7 +116,7 @@ app.put('/servicos/:id', (req, res) => {
 })
 app.delete('/servicos/:id', (req, res) => {
     servicosController.apagar(req, res);
-})
+})*/
 
 app.get('/login', (req, res) => {
     pessoaController.loginForm(req, res);

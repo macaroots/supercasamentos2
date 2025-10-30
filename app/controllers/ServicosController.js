@@ -1,5 +1,6 @@
 const Servico = require('../lib/Servico');
 const jwt = require('jsonwebtoken');
+const express = require('express');
 
 class ServicosController {
 
@@ -7,6 +8,30 @@ class ServicosController {
 
     constructor(servicosStore) {
         this.servicosStore = servicosStore;
+    }
+
+    getRouter() {
+        const rotas = express.Router();
+
+
+        rotas.get('/', (req, res) => {
+            this.listar(req, res);
+        })
+        rotas.get('/:id', (req, res) => {
+            this.ver(req, res);
+        })
+        rotas.post('/', (req, res) => {
+            this.inserir(req, res);
+        })
+        rotas.put('/:id', (req, res) => {
+            this.alterar(req, res);
+        })
+        rotas.delete('/:id', (req, res) => {
+            this.apagar(req, res);
+        })
+
+
+        return rotas;
     }
 
     async listar(request, response) {

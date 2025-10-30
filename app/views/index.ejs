@@ -1,41 +1,64 @@
-<%- include('cabecalho') %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Casamentos</title>
+    <link rel="stylesheet" href="/css/estilo.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4.0.15/dist/vue-router.global.js"></script>
+</head>
+<body id="app">
+    <header>
+        <h1>Supercasamentos</h1>
+        <nav>
+            <router-link to="/">Início</router-link>
+            <a href="/admin/servicos">Serviços</a>
+            <router-link to="/servicos">serviços</router-link>
+            <router-link to="/admin/servicos">Admin serviços</router-link>
+        </nav>
+    </header>
 
-<main>
+    <main>
+        <router-view />
+    </main>
+    
+    <footer>Desenvolvido por Renato</footer>
+</body>
+</html>
 
-    <section id="banner_inicial">
-        <div>O Super Casamentos está aqui pra você! <%= a %><%= info %></div>
-        <img src="/images/banner.png" alt="Super Casamentos">
-    </section>
-    <section>
-        <h2>Tudo sobre Super Casamentos</h2>
-        <p>Donec at tempus ipsum. Curabitur pretium in eros eget elementum. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin ultrices massa urna, ut convallis risus lobortis quis. </p>
-        <img src="/images/banner2.png" alt="Noivos ao pôr-do-sol">
-    </section>
-    <section id="servicos">
-        <h2>Nossos serviços</h2>
-    <%
-    for (let servico of servicos) {
-    _%>
-        <article class="servico">
-            <h3><%= servico.nome %></h3>
-            <img src="<%= servico.imagem %>" alt="<%= servico.nome %>">
-            <span><%= servico.duracao %>h</span>
-            <span><%= servico.preco %></span>
-            <a href="/detalhes/<%= servico.id %>">Ver mais</a>
-        </article>
-    <%
+<script type="module">
+    import Static from './js/Static.js'
+    import Detalhes from './js/Detalhes.js'
+    async function listar() {
+        return [];
     }
-    _%>
-    </section>
-    <form action="/idade" method="post">
-        <label>
-            <span>Nome</span>
-            <input name="nome" />
-        </label>
-        <label>
-            <span>Ano</span>
-            <input name="ano" type="number" />
-        </label>
-        <button>Enviar</button>
-    </form>
-</main>
+    debugger
+    let servicos = Vue.ref(await listar());
+    const routes = [
+        { path: '/', component: Static('/servicos'), props: {
+            servicos
+        } },
+        { path: '/admin/servicos', component: Static('/admin/servicos'), props: {
+            servicos
+        } },
+        { path: '/servicos', component: Static('/servicos'), props: {
+            servicos
+        } },
+        { path: '/detalhes/:id', component: Detalhes, props: {
+            servicos
+        } }
+    ]
+    
+    const router = VueRouter.createRouter({
+        history: VueRouter.createMemoryHistory(),
+        routes,
+    });
+    
+    Vue.createApp({
+        setup() {
+            return {
+            }
+        }
+    }).use(router).mount('#app')
+</script>
